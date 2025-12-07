@@ -1,0 +1,109 @@
+🚀 Step 1 — Install kind (if not installed)
+brew install kind
+
+🚀 Step 2 — Create a local Kubernetes cluster
+kind create cluster --name spinnaker
+
+🚀 Step 3 — Install Spinnaker Operator CRDs
+kubectl apply -f https://raw.githubusercontent.com/spinnaker/spinnaker-operator/master/deploy/crds/all.crds.yaml
+
+🚀 Step 4 — Install Spinnaker Operator itself
+kubectl apply -f https://raw.githubusercontent.com/spinnaker/spinnaker-operator/master/deploy/operator/operator.yaml
+
+🚀 Step 5 — Apply a minimal Spinnaker instance
+
+Create a file spinnaker.yml:
+
+apiVersion: spinnaker.io/v1alpha2
+kind: SpinnakerService
+metadata:
+  name: spinnaker
+spec:
+  spinnakerConfig:
+    config:
+      version: 1.31.0   # supported release
+    profiles: {}
+  expose:
+    type: NodePort
+
+
+Apply it:
+
+kubectl apply -f spinnaker.yml
+
+
+⏳ Wait 3–5 minutes
+
+Spinnaker will start many pods:
+
+kubectl get pods -n spinnaker
+
+
+You should see:
+
+deck
+
+gate
+
+clouddriver
+
+orca
+
+front50
+
+rosco
+
+echo
+
+igor
+
+fiat
+
+🚀 Step 6 — Port forward Deck UI
+kubectl port-forward -n spinnaker svc/spinnaker-spin-deck 9000:9000
+
+
+Then open:
+
+👉 http://localhost:9000
+
+That is REAL Spinnaker.
+Not stripped. Not broken. Not deprecated.
+
+This is the exact setup cloud teams used before migrating to Argo.
+
+🎉 After this is up
+
+I’ll walk you through:
+
+✔ Create Spinnaker app
+✔ Create pipeline
+✔ Deploy something dummy
+✔ Show how complex it feels
+✔ And then show the ArgoCD equivalent (much simpler)
+
+This will give you crystal clarity on why companies leave Spinnaker.
+
+
+
+
+
+
+
+Now run 2: 
+kubectl -n spinnaker-operator get pods -w
+
+
+
+
+
+# Recreate the kind cluster
+kind create cluster --name spinnaker
+
+# Reinstall Spinnaker operator
+kubectl apply -f https://raw.githubusercontent.com/spinnaker/spinnaker-operator/master/deploy/crds/all.crds.yaml
+kubectl apply -f https://raw.githubusercontent.com/spinnaker/spinnaker-operator/master/deploy/operator/operator.yaml
+
+# Apply your configs
+kubectl apply -f spinnaker-operator/minio.yml
+kubectl apply -f spinnaker-operator/spinnaker.yml
